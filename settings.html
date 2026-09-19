@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>飞行棋 · 设置</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell" data-mode="light">
+    <header class="site-header">
+      <div class="brand-lockup">
+        <span class="brand-mark">棋</span>
+        <div class="brand-copy"><strong>飞行棋设置</strong><span>同设备双人 · 纯本地保存</span></div>
+      </div>
+      <div class="top-actions"><a class="ghost-button" href="index.html">返回开始页</a></div>
+    </header>
+
+    <div class="page-heading">
+      <p class="eyebrow">Customize your table</p>
+      <h1>把这一局调成你们的样子</h1>
+      <p>设置只保存在当前浏览器。你可以调整玩家信息、回合交接遮罩、规则开关和每个版本的事件文字。</p>
+    </div>
+
+    <section class="settings-layout">
+      <section class="settings-panel">
+        <div class="settings-section">
+          <h2>模式与隐私</h2>
+          <label class="check-row">
+            <span class="check-copy"><strong>回合交接遮罩</strong><span>进入下一回合前隐藏上一位玩家看到的事件内容。</span></span>
+            <input id="handoffOverlay" class="switch" type="checkbox">
+          </label>
+        </div>
+
+        <div class="settings-section">
+          <h2>玩家</h2>
+          <div class="inline-fields">
+            <label class="field"><span>玩家一</span><input id="playerOne" type="text" maxlength="16" autocomplete="off"></label>
+            <label class="field"><span>玩家二</span><input id="playerTwo" type="text" maxlength="16" autocomplete="off"></label>
+          </div>
+          <div class="inline-fields" style="margin-top: 10px">
+            <label class="field"><span>玩家一颜色</span><input id="playerOneColor" type="color" value="#C4787A"></label>
+            <label class="field"><span>玩家二颜色</span><input id="playerTwoColor" type="color" value="#7A9E8E"></label>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h2>规则开关</h2>
+          <label class="check-row"><span class="check-copy"><strong>后退格生效</strong><span>停在“后进 X 格”时实际后退。</span></span><input id="allowBackSteps" class="switch" type="checkbox" checked></label>
+          <label class="check-row"><span class="check-copy"><strong>跳转格生效</strong><span>停在“退回到 N 格”时跳转到目标格。</span></span><input id="allowJumps" class="switch" type="checkbox" checked></label>
+          <label class="check-row"><span class="check-copy"><strong>保留惩罚提示</strong><span>显示事件原文中的挑战、惩罚和强制提示。</span></span><input id="allowPenaltyCells" class="switch" type="checkbox" checked></label>
+        </div>
+
+        <div class="settings-actions">
+          <button id="btnSaveSettings" class="primary-button" type="button">保存设置</button>
+          <a class="secondary-button" href="index.html">返回开始</a>
+        </div>
+      </section>
+
+      <aside class="settings-panel">
+        <div class="settings-section">
+          <h2>自定义事件</h2>
+          <p class="helper-text">只修改当前选择的版本。空白事件仍会保留为空，不会改变其他版本。</p>
+          <label class="field" style="margin-top: 14px"><span>选择版本</span><select id="settingsVersion"></select></label>
+          <div id="eventsEditor" class="events-editor" style="margin-top: 14px"></div>
+          <div class="settings-actions">
+            <button id="btnResetEvents" class="danger-button" type="button">恢复当前版本默认</button>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+  <script type="module">
+    import { mountSettingsPage } from './settings-ui.mjs';
+    mountSettingsPage({ document, storage: window.localStorage });
+  </script>
+</body>
+</html>

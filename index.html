@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>飞行棋 · 同设备双人</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell" data-mode="light">
+    <header class="site-header">
+      <div class="brand-lockup">
+        <span class="brand-mark">棋</span>
+        <div class="brand-copy"><strong>飞行棋</strong><span>同设备双人 · 轻松桌游体验</span></div>
+      </div>
+      <div class="top-actions"><a class="ghost-button" href="settings.html">设置</a></div>
+    </header>
+
+    <section class="page-heading">
+      <p class="eyebrow">A private little table</p>
+      <h1>选一张棋盘，开始你们的回合。</h1>
+      <p>两个人共用一台设备，轮流掷骰。支持回合交接遮罩、事件自定义和本地保存。</p>
+    </section>
+
+    <section class="start-layout">
+      <section class="panel">
+        <div class="panel-heading"><h2>选择版本</h2><span id="selectedVersionMeta">—</span></div>
+        <div id="versionGrid" class="version-grid"></div>
+      </section>
+
+      <aside class="panel">
+        <div class="form-stack">
+          <div><p class="eyebrow">Game setup</p><h2>开局设置</h2></div>
+          <div class="inline-fields">
+            <label class="field"><span>玩家一</span><input id="playerOne" type="text" maxlength="16" autocomplete="off"></label>
+            <label class="field"><span>玩家二</span><input id="playerTwo" type="text" maxlength="16" autocomplete="off"></label>
+          </div>
+          <button id="btnStart" class="primary-button" type="button">开始新局</button>
+          <button id="btnContinue" class="secondary-button" type="button" hidden>继续上次进度</button>
+          <p id="saveHint" class="helper-text">设置和进度只保存在当前浏览器。</p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="preview-panel" style="margin-top: 20px">
+      <div class="panel-heading"><h2 id="previewTitle">棋盘预览</h2><span id="previewCount">—</span></div>
+      <div class="preview-board-wrap"><div id="boardPath" class="path" aria-label="棋盘预览"></div></div>
+      <p id="posInfo" class="helper-text" style="margin-top: 14px">选择版本后查看棋盘。</p>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script type="module">
+    import { BOARDS, DEFAULT_VERSION, getBoard } from './game-data.mjs';
+    import { createInitialState } from './game-engine.mjs';
+    import { loadGame, loadSettings, saveSettings, saveGame } from './storage.mjs';
+
+    const selectedKey = new URLSearchParams(window.location.search).get('version') || DEFAULT_VERSION;
+    let versionKey = BOARDS[selectedKey] ? selectedKey : DEFAULT_VERSION;
+    const settings = loadSettings(window.localStorage);
+    const saved = loadGame(window.localStorage);
+    const versionGrid = document.getElementById('versionGrid');
+    const boardPath = document.getElementById('boardPath');
+
+    document.getElementById('playerOne').value = settings.players[0].name;
+    document.getElementById('playerTwo').value = settings.players[1].name;
+    document.querySelector('main').dataset.mode = 'light';
+    document.getElementById('btnContinue').hidden = !saved;
+
+    function renderBoard() {
+      const board = getBoard(versionKey);
+      document.getElementById('selectedVersionMeta').textContent = `${board.cells.length}格 · ${board.name}`;
+      document.getElementById('previewTitle').textContent = board.name;
+      document.getElementById('previewCount').textContent = `${board.cells.length}格`;
+      boardPath.replaceChildren();
+      board.cells.forEach((cell, index) => {
+        const element = document.createElement('div');
+        element.className = `cell ${cell.type}`;
+        element.setAttribute('aria-label', `第${index}格：${cell.text}`);
+        const number = document.createElement('span');
+        number.className = 'num';
+        number.textContent = index;
+        const text = document.createElement('span');
+        text.textContent = cell.text;
+        element.append(number, text);
+        boardPath.append(element);
+      });
+      document.getElementById('posInfo').textContent = saved && saved.versionKey === versionKey
+        ? `${saved.players[0].name}：第${saved.players[0].position}格 · ${saved.players[1].name}：第${saved.players[1].position}格`
+        : '新局将从第 0 格开始。';
+    }
+
+    function renderVersions() {
+      versionGrid.replaceChildren();
+      Object.entries(BOARDS).forEach(([key, board]) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `version-card${key === versionKey ? ' active' : ''}`;
+        button.innerHTML = `<strong>${board.name}</strong><small>${board.cells.length}格 · ${key === 'love' ? '温柔互动' : key === 'foreplay' ? '渐进挑战' : '主题玩法'}</small>`;
+        button.addEventListener('click', () => {
+          versionKey = key;
+          renderVersions();
+          renderBoard();
+        });
+        versionGrid.append(button);
+      });
+    }
+
+    function collectSettings() {
+      return {
+        ...settings,
+        handoffOverlay: settings.handoffOverlay,
+        players: [
+          { name: document.getElementById('playerOne').value.trim() || '玩家一', color: settings.players[0].color },
+          { name: document.getElementById('playerTwo').value.trim() || '玩家二', color: settings.players[1].color }
+        ]
+      };
+    }
+
+    function start(newGame) {
+      const nextSettings = collectSettings();
+      saveSettings(nextSettings, window.localStorage);
+      if (newGame) {
+        saveGame(createInitialState({
+          versionKey,
+          players: nextSettings.players,
+          settings: { ...nextSettings.rules, handoffOverlay: nextSettings.handoffOverlay }
+        }), window.localStorage);
+        window.location.href = `game.html?version=${encodeURIComponent(versionKey)}&new=1`;
+      } else {
+        window.location.href = 'game.html';
+      }
+    }
+
+    document.getElementById('btnStart').addEventListener('click', () => start(true));
+    document.getElementById('btnContinue').addEventListener('click', () => start(false));
+    renderVersions();
+    renderBoard();
+  </script>
+</body>
+</html>

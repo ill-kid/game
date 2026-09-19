@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>飞行棋 · 游戏</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="game-shell" data-mode="light">
+    <header class="game-header">
+      <a class="icon-button" href="index.html" aria-label="返回开始页">返回</a>
+      <div>
+        <p class="eyebrow">同设备双人</p>
+        <h1 id="gameTitle">飞行棋</h1>
+      </div>
+      <div class="header-actions">
+        <a class="icon-button" href="settings.html" aria-label="打开设置">设置</a>
+      </div>
+    </header>
+
+    <section class="game-layout">
+      <section class="board-panel" aria-labelledby="boardName">
+        <div class="panel-heading">
+          <h2 id="boardName">飞行棋</h2>
+          <span id="cellCount">0格</span>
+        </div>
+        <div id="boardPath" class="path" aria-label="飞行棋棋盘"></div>
+        <div class="game-footer">
+          <span>事件只在最终停留格生效</span>
+          <button id="btnRestart" class="ghost-button" type="button">重新开始</button>
+        </div>
+      </section>
+
+      <aside class="control-panel" aria-label="游戏控制">
+        <div class="turn-card">
+          <div>
+            <span id="turnLabel">当前回合</span>
+            <strong id="turnText" aria-live="polite">玩家一</strong>
+          </div>
+          <span id="cellCountHint">轮流进行</span>
+        </div>
+        <div id="playerPills" class="player-pills" aria-label="玩家位置"></div>
+        <div class="dice-row">
+          <div id="diceFace" class="dice" aria-live="polite">-</div>
+          <div class="dice-copy">掷骰后棋子会移动到最终位置，再查看本回合事件。</div>
+        </div>
+        <div class="action-row">
+          <button id="btnRoll" class="primary-button" type="button">掷骰</button>
+          <a class="ghost-button" href="settings.html">设置</a>
+        </div>
+        <section id="eventPanel" class="event-panel empty" aria-live="polite">
+          <p>掷骰后，这里会显示停留格的事件。</p>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <div class="handoff-overlay" id="handoffOverlay" hidden aria-modal="true" role="dialog" aria-labelledby="handoffTitle">
+    <div class="handoff-card">
+      <p class="eyebrow">回合交接</p>
+      <h2 id="handoffTitle">请交给下一位玩家</h2>
+      <p id="handoffText">准备好后继续。</p>
+      <button id="btnHandoff" class="primary-button" type="button">继续</button>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+
+  <div class="float-bar" id="floatBar" style="display:none">
+    <span data-float-restore>飞行棋进行中</span>
+    <span data-float-pos></span>
+  </div>
+
+  <script src="float-window.js"></script>
+  <script type="module">
+    import { mountGamePage } from './game-ui.mjs';
+    if (window.FlightFloat) {
+      FlightFloat.init({ selector: '#floatBar', onRestore: () => {
+        document.querySelector('.game-shell')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } });
+      FlightFloat.show();
+    }
+    mountGamePage({ document, storage: window.localStorage });
+  </script>
+</body>
+</html>
