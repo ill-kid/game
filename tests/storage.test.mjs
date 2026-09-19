@@ -58,5 +58,13 @@ test('没有设置时返回稳定默认值', () => {
   assert.equal(settings.mode, 'light');
   assert.equal(settings.handoffOverlay, false);
   assert.equal(settings.rules.hideDice, false);
+  assert.equal(settings.boardFontSize, 'standard');
   assert.equal(settings.players.length, 2);
+});
+
+test('保存的棋盘字体大小可以读取', () => {
+  const storage = fakeStorage({
+    flight_chess_settings_v2: JSON.stringify({ boardFontSize: 'large' })
+  });
+  assert.equal(loadSettings(storage).boardFontSize, 'large');
 });

@@ -70,8 +70,12 @@ export function saveGame(state, storage) {
 
 export function loadSettings(storage) {
   const parsed = parseJson(getStorage(storage), SETTINGS_KEY);
+  const boardFontSize = ['small', 'standard', 'large'].includes(parsed?.boardFontSize)
+    ? parsed.boardFontSize
+    : 'standard';
   return {
     mode: 'light',
+    boardFontSize,
     handoffOverlay: typeof parsed?.handoffOverlay === 'boolean'
       ? parsed.handoffOverlay
       : false,

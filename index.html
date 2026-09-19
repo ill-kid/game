@@ -65,6 +65,7 @@
     document.getElementById('playerOne').value = settings.players[0].name;
     document.getElementById('playerTwo').value = settings.players[1].name;
     document.querySelector('main').dataset.mode = 'light';
+    document.querySelector('main').style.setProperty('--board-font-scale', { small: '0.82', standard: '1', large: '1.2' }[settings.boardFontSize] || '1');
     document.getElementById('btnContinue').hidden = !saved;
 
     function renderBoard() {

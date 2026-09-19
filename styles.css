@@ -168,7 +168,7 @@ button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
   overflow: hidden;
   text-align: center;
   line-height: 1.18;
-  font-size: clamp(.68rem, .9vw, .92rem);
+  font-size: calc(.82rem * var(--board-font-scale, 1));
   color: #665c53;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -177,7 +177,7 @@ button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
 .cell.start { color: #2c665d; background: var(--teal-soft); border-color: #b9d7ce; font-weight: 800; }
 .cell.end { color: #8c5d20; background: #f7e8c8; border-color: #e7c98e; font-weight: 800; }
 .cell.special { color: var(--accent-deep); background: var(--accent-soft); border-color: #e9c0b6; }
-.cell .num { position: absolute; top: 4px; left: 5px; color: #aa9c8d; font-family: ui-monospace, SFMono-Regular, monospace; font-size: .72rem; font-weight: 700; }
+.cell .num { position: absolute; top: 4px; left: 5px; color: #aa9c8d; font-family: ui-monospace, SFMono-Regular, monospace; font-size: calc(.72rem * var(--board-font-scale, 1)); font-weight: 700; }
 .cell > span:not(.num) { max-width: 100%; overflow-wrap: anywhere; }
 .piece { position: absolute; right: 5px; bottom: 5px; width: 19px; height: 19px; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,.2); }
 .piece.player { background: var(--player-color, #C4787A); }

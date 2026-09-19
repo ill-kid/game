@@ -23,6 +23,10 @@ function createElement(document, tag, className, text) {
   return element;
 }
 
+function boardFontScale(value) {
+  return { small: '0.82', standard: '1', large: '1.2' }[value] || '1';
+}
+
 export function buildAnimationPositions(event) {
   const positions = [];
   if (event.landedPosition > event.startPosition) {
@@ -51,6 +55,7 @@ export function renderGameState(state, board, document, options = {}) {
   if (!root || !path || !turnText || !diceFace || !eventPanel) return;
 
   root.dataset.mode = 'light';
+  root.style.setProperty('--board-font-scale', boardFontScale(state.boardFontSize));
   root.style.setProperty('--player-color', getPlayer(state, 'player').color);
   root.style.setProperty('--player2-color', getPlayer(state, 'player2').color);
   const boardName = document.getElementById('boardName');
@@ -154,6 +159,7 @@ export function mountGamePage({ document, storage } = {}) {
     ...settings.rules,
     handoffOverlay: settings.handoffOverlay
   };
+  state.boardFontSize = settings.boardFontSize;
   const board = getBoard(state.versionKey);
   state.customEvents = { [board.key]: getCustomEvents(board.key, targetStorage) };
   let busy = false;
@@ -242,6 +248,7 @@ export function mountGamePage({ document, storage } = {}) {
       settings: { ...settings.rules, handoffOverlay: settings.handoffOverlay },
       customEvents: state.customEvents
     });
+    state.boardFontSize = settings.boardFontSize;
     saveGame(state, targetStorage);
     revealed = true;
     render();

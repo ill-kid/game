@@ -48,6 +48,7 @@ export function mountSettingsPage({ document, storage } = {}) {
   const allowBackSteps = byId(targetDocument, 'allowBackSteps');
   const allowJumps = byId(targetDocument, 'allowJumps');
   const allowPenaltyCells = byId(targetDocument, 'allowPenaltyCells');
+  const boardFontSize = byId(targetDocument, 'boardFontSize');
   const versionSelect = byId(targetDocument, 'settingsVersion');
 
   if (handoff) handoff.checked = settings.handoffOverlay;
@@ -59,6 +60,7 @@ export function mountSettingsPage({ document, storage } = {}) {
   if (allowBackSteps) allowBackSteps.checked = settings.rules.allowBackSteps;
   if (allowJumps) allowJumps.checked = settings.rules.allowJumps;
   if (allowPenaltyCells) allowPenaltyCells.checked = settings.rules.allowPenaltyCells;
+  if (boardFontSize) boardFontSize.value = settings.boardFontSize;
 
   Object.entries(BOARDS).forEach(([key, board]) => {
     const option = targetDocument.createElement('option');
@@ -85,6 +87,9 @@ export function mountSettingsPage({ document, storage } = {}) {
   byId(targetDocument, 'btnSaveSettings')?.addEventListener('click', () => {
     const nextSettings = {
       handoffOverlay: Boolean(handoff?.checked),
+      boardFontSize: ['small', 'standard', 'large'].includes(boardFontSize?.value)
+        ? boardFontSize.value
+        : 'standard',
       players: [
         { name: playerOne?.value.trim() || '玩家一', color: playerOneColor?.value || '#C4787A' },
         { name: playerTwo?.value.trim() || '玩家二', color: playerTwoColor?.value || '#7A9E8E' }
