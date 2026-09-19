@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main class="app-shell" data-mode="light">
+  <main class="app-shell settings-page" data-mode="light">
     <header class="site-header">
       <div class="brand-lockup">
         <span class="brand-mark">棋</span>
@@ -16,7 +16,7 @@
       <div class="top-actions"><a class="ghost-button" href="index.html">返回开始页</a></div>
     </header>
 
-    <div class="page-heading">
+    <div class="page-heading settings-heading">
       <p class="eyebrow">Customize your table</p>
       <h1>把这一局调成你们的样子</h1>
       <p>设置只保存在当前浏览器。你可以调整玩家信息、回合交接遮罩、规则开关和每个版本的事件文字。</p>
@@ -55,9 +55,19 @@
             <label class="field"><span>玩家一</span><input id="playerOne" type="text" maxlength="16" autocomplete="off"></label>
             <label class="field"><span>玩家二</span><input id="playerTwo" type="text" maxlength="16" autocomplete="off"></label>
           </div>
-          <div class="inline-fields" style="margin-top: 10px">
-            <label class="field"><span>玩家一颜色</span><input id="playerOneColor" type="color" value="#C4787A"></label>
-            <label class="field"><span>玩家二颜色</span><input id="playerTwoColor" type="color" value="#7A9E8E"></label>
+          <div class="player-color-grid">
+            <label class="color-picker">
+              <input id="playerOneColor" type="color" value="#C4787A" aria-label="选择玩家一棋子颜色">
+              <span id="playerOneSwatch" class="color-swatch" aria-hidden="true"></span>
+              <span class="color-picker-copy"><strong>玩家一棋子</strong><span>点击选择颜色</span></span>
+              <output id="playerOneColorValue" class="color-value" for="playerOneColor">#C4787A</output>
+            </label>
+            <label class="color-picker">
+              <input id="playerTwoColor" type="color" value="#7A9E8E" aria-label="选择玩家二棋子颜色">
+              <span id="playerTwoSwatch" class="color-swatch" aria-hidden="true"></span>
+              <span class="color-picker-copy"><strong>玩家二棋子</strong><span>点击选择颜色</span></span>
+              <output id="playerTwoColorValue" class="color-value" for="playerTwoColor">#7A9E8E</output>
+            </label>
           </div>
         </div>
 

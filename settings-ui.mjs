@@ -15,6 +15,14 @@ function selectedVersion(document) {
   return byId(document, 'settingsVersion')?.value || DEFAULT_VERSION;
 }
 
+export function syncColorPreview(input, swatch, valueLabel) {
+  const color = /^#[0-9a-f]{6}$/i.test(input?.value || '')
+    ? input.value.toUpperCase()
+    : '#000000';
+  swatch?.style.setProperty('--preview-color', color);
+  if (valueLabel) valueLabel.textContent = color;
+}
+
 function renderEvents(document, versionKey, values) {
   const editor = byId(document, 'eventsEditor');
   if (!editor) return;
@@ -45,6 +53,10 @@ export function mountSettingsPage({ document, storage } = {}) {
   const playerTwo = byId(targetDocument, 'playerTwo');
   const playerOneColor = byId(targetDocument, 'playerOneColor');
   const playerTwoColor = byId(targetDocument, 'playerTwoColor');
+  const playerOneSwatch = byId(targetDocument, 'playerOneSwatch');
+  const playerTwoSwatch = byId(targetDocument, 'playerTwoSwatch');
+  const playerOneColorValue = byId(targetDocument, 'playerOneColorValue');
+  const playerTwoColorValue = byId(targetDocument, 'playerTwoColorValue');
   const allowBackSteps = byId(targetDocument, 'allowBackSteps');
   const allowJumps = byId(targetDocument, 'allowJumps');
   const allowPenaltyCells = byId(targetDocument, 'allowPenaltyCells');
@@ -57,10 +69,19 @@ export function mountSettingsPage({ document, storage } = {}) {
   if (playerTwo) playerTwo.value = settings.players[1].name;
   if (playerOneColor) playerOneColor.value = settings.players[0].color;
   if (playerTwoColor) playerTwoColor.value = settings.players[1].color;
+  syncColorPreview(playerOneColor, playerOneSwatch, playerOneColorValue);
+  syncColorPreview(playerTwoColor, playerTwoSwatch, playerTwoColorValue);
   if (allowBackSteps) allowBackSteps.checked = settings.rules.allowBackSteps;
   if (allowJumps) allowJumps.checked = settings.rules.allowJumps;
   if (allowPenaltyCells) allowPenaltyCells.checked = settings.rules.allowPenaltyCells;
   if (boardFontSize) boardFontSize.value = settings.boardFontSize;
+
+  playerOneColor?.addEventListener('input', () => {
+    syncColorPreview(playerOneColor, playerOneSwatch, playerOneColorValue);
+  });
+  playerTwoColor?.addEventListener('input', () => {
+    syncColorPreview(playerTwoColor, playerTwoSwatch, playerTwoColorValue);
+  });
 
   Object.entries(BOARDS).forEach(([key, board]) => {
     const option = targetDocument.createElement('option');
