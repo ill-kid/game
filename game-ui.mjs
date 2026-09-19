@@ -27,6 +27,20 @@ function boardFontScale(value) {
   return { small: '0.82', standard: '1', large: '1.2' }[value] || '1';
 }
 
+export function getMoveStepMs() {
+  return 260;
+}
+
+function waitForBrowserPaint() {
+  return new Promise(resolve => {
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(() => resolve());
+      return;
+    }
+    setTimeout(resolve, 0);
+  });
+}
+
 export function buildAnimationPositions(event) {
   const positions = [];
   if (event.landedPosition > event.startPosition) {
@@ -165,7 +179,7 @@ export function mountGamePage({ document, storage } = {}) {
   let busy = false;
   let revealed = true;
   let toastTimer = null;
-  const moveStepMs = 140;
+  const moveStepMs = getMoveStepMs();
 
   const toast = message => {
     const element = targetDocument.getElementById('toast');
@@ -193,6 +207,7 @@ export function mountGamePage({ document, storage } = {}) {
       frame.winner = null;
       frame.lastEvent = null;
       render(frame);
+      await waitForBrowserPaint();
       await new Promise(resolve => setTimeout(resolve, moveStepMs));
     }
     if (positions.length === 0) render(beforeState);
