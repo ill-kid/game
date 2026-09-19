@@ -2,6 +2,7 @@ import { DEFAULT_VERSION, getBoard } from './game-data.mjs';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   handoffOverlay: false,
+  hideDice: false,
   allowBackSteps: true,
   allowJumps: true,
   allowPenaltyCells: true

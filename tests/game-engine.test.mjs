@@ -6,6 +6,7 @@ import {
   resolveReceiver,
   rollDice
 } from '../game-engine.mjs';
+import { buildAnimationPositions } from '../game-ui.mjs';
 import { getBoard } from '../game-data.mjs';
 
 test('后退格只在最终停留后生效', () => {
@@ -79,4 +80,8 @@ test('关闭后退规则时不会改变最终位置', () => {
   const result = resolveMove(state, 'player', 1, board);
   assert.equal(result.event.finalPosition, 1);
   assert.equal(result.state.players[0].position, 1);
+});
+
+test('逐格动画包含前进到落点和特殊格后的每一步', () => {
+  assert.deepEqual(buildAnimationPositions({ startPosition: 2, landedPosition: 5, finalPosition: 3 }), [3, 4, 5, 4, 3]);
 });

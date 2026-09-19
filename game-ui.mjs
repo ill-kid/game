@@ -23,6 +23,25 @@ function createElement(document, tag, className, text) {
   return element;
 }
 
+export function buildAnimationPositions(event) {
+  const positions = [];
+  if (event.landedPosition > event.startPosition) {
+    for (let position = event.startPosition + 1; position <= event.landedPosition; position += 1) {
+      positions.push(position);
+    }
+  }
+  if (event.finalPosition < event.landedPosition) {
+    for (let position = event.landedPosition - 1; position >= event.finalPosition; position -= 1) {
+      positions.push(position);
+    }
+  } else if (event.finalPosition > event.landedPosition) {
+    for (let position = event.landedPosition + 1; position <= event.finalPosition; position += 1) {
+      positions.push(position);
+    }
+  }
+  return positions;
+}
+
 export function renderGameState(state, board, document, options = {}) {
   const root = document.querySelector('.game-shell');
   const path = document.getElementById('boardPath');
@@ -63,7 +82,9 @@ export function renderGameState(state, board, document, options = {}) {
   const turnLabel = createElement(document, 'span', '', state.status === 'finished' ? '本局结束' : '当前回合');
   const turnName = createElement(document, 'strong', '', winner ? `${winner.name} 获胜` : currentPlayer.name);
   turnText.append(turnLabel, turnName);
-  diceFace.textContent = state.lastDice || '-';
+  const diceHidden = state.settings?.hideDice === true;
+  diceFace.textContent = diceHidden ? '?' : (state.lastDice || '-');
+  diceFace.setAttribute('aria-label', diceHidden ? '骰子点数已隐藏' : `骰子点数${state.lastDice || '未投掷'}`);
 
   const playerPills = document.getElementById('playerPills');
   if (playerPills) {
@@ -128,11 +149,17 @@ export function mountGamePage({ document, storage } = {}) {
     settings: { ...settings.rules, handoffOverlay: settings.handoffOverlay },
     customEvents: {}
   });
+  state.settings = {
+    ...state.settings,
+    ...settings.rules,
+    handoffOverlay: settings.handoffOverlay
+  };
   const board = getBoard(state.versionKey);
   state.customEvents = { [board.key]: getCustomEvents(board.key, targetStorage) };
   let busy = false;
   let revealed = true;
   let toastTimer = null;
+  const moveStepMs = 140;
 
   const toast = message => {
     const element = targetDocument.getElementById('toast');
@@ -143,10 +170,26 @@ export function mountGamePage({ document, storage } = {}) {
     toastTimer = setTimeout(() => element.classList.remove('show'), 1800);
   };
 
-  const render = () => {
-    renderGameState(state, board, targetDocument, { busy, revealed });
+  const render = (viewState = state) => {
+    renderGameState(viewState, board, targetDocument, { busy, revealed });
     const float = window.FlightFloat;
-    if (float) float.setPosText(`${getPlayer(state, 'player').position} · ${getPlayer(state, 'player2').position}`);
+    if (float) float.setPosText(`${getPlayer(viewState, 'player').position} · ${getPlayer(viewState, 'player2').position}`);
+  };
+
+  const animateMove = async (beforeState, nextState, event, playerId) => {
+    const positions = buildAnimationPositions(event);
+    for (const position of positions) {
+      const frame = JSON.parse(JSON.stringify(nextState));
+      const movingPlayer = frame.players.find(player => player.id === playerId);
+      movingPlayer.position = position;
+      frame.turn = playerId;
+      frame.status = 'playing';
+      frame.winner = null;
+      frame.lastEvent = null;
+      render(frame);
+      await new Promise(resolve => setTimeout(resolve, moveStepMs));
+    }
+    if (positions.length === 0) render(beforeState);
   };
 
   const advanceAfterEvent = () => {
@@ -163,13 +206,15 @@ export function mountGamePage({ document, storage } = {}) {
     }
   };
 
-  const onRoll = () => {
+  const onRoll = async () => {
     if (busy || state.status === 'finished') return;
     busy = true;
     render();
     const current = state.turn;
     const dice = rollDice();
     const result = resolveMove(state, current, dice, board);
+    const beforeState = state;
+    if (result.event) await animateMove(beforeState, result.state, result.event, current);
     state = result.state;
     saveGame(state, targetStorage);
     busy = false;

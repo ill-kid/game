@@ -40,6 +40,7 @@ export function mountSettingsPage({ document, storage } = {}) {
   const targetStorage = storage || window.localStorage;
   const settings = loadSettings(targetStorage);
   const handoff = byId(targetDocument, 'handoffOverlay');
+  const hideDice = byId(targetDocument, 'hideDice');
   const playerOne = byId(targetDocument, 'playerOne');
   const playerTwo = byId(targetDocument, 'playerTwo');
   const playerOneColor = byId(targetDocument, 'playerOneColor');
@@ -50,6 +51,7 @@ export function mountSettingsPage({ document, storage } = {}) {
   const versionSelect = byId(targetDocument, 'settingsVersion');
 
   if (handoff) handoff.checked = settings.handoffOverlay;
+  if (hideDice) hideDice.checked = settings.rules.hideDice;
   if (playerOne) playerOne.value = settings.players[0].name;
   if (playerTwo) playerTwo.value = settings.players[1].name;
   if (playerOneColor) playerOneColor.value = settings.players[0].color;
@@ -91,7 +93,8 @@ export function mountSettingsPage({ document, storage } = {}) {
       rules: {
         allowBackSteps: Boolean(allowBackSteps?.checked),
         allowJumps: Boolean(allowJumps?.checked),
-        allowPenaltyCells: Boolean(allowPenaltyCells?.checked)
+        allowPenaltyCells: Boolean(allowPenaltyCells?.checked),
+        hideDice: Boolean(hideDice?.checked)
       }
     };
     const version = selectedVersion(targetDocument);

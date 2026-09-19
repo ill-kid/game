@@ -57,5 +57,6 @@ test('没有设置时返回稳定默认值', () => {
   const settings = loadSettings(fakeStorage());
   assert.equal(settings.mode, 'light');
   assert.equal(settings.handoffOverlay, false);
+  assert.equal(settings.rules.hideDice, false);
   assert.equal(settings.players.length, 2);
 });
