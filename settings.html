@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>飞行棋 · 设置</title>
   <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add('auth-pending');</script>
+  <script type="module">
+    import { requireAuth } from './auth.mjs';
+    requireAuth();
+  </script>
 </head>
 <body>
   <main class="app-shell settings-page" data-mode="light">
@@ -13,7 +18,7 @@
         <span class="brand-mark">棋</span>
         <div class="brand-copy"><strong>飞行棋设置</strong><span>同设备双人 · 纯本地保存</span></div>
       </div>
-      <div class="top-actions"><a class="ghost-button" href="index.html">返回开始页</a></div>
+      <div class="top-actions"><button class="ghost-button" type="button" data-lock-game>锁定</button><a class="ghost-button" href="index.html">返回开始页</a></div>
     </header>
 
     <div class="page-heading settings-heading">
@@ -100,7 +105,9 @@
   <div class="toast" id="toast" role="status"></div>
   <script type="module">
     import { mountSettingsPage } from './settings-ui.mjs';
+    import { bindLockButtons } from './auth.mjs';
     mountSettingsPage({ document, storage: window.localStorage });
+    bindLockButtons();
   </script>
 </body>
 </html>

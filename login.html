@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>飞行棋 · 密码验证</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="login-page">
+  <main class="login-shell">
+    <section class="login-panel" aria-labelledby="loginTitle">
+      <span class="brand-mark" aria-hidden="true">棋</span>
+      <p class="eyebrow">PRIVATE GAME</p>
+      <h1 id="loginTitle">输入密码</h1>
+      <p class="login-copy">验证后才能进入游戏。</p>
+      <form id="loginForm" class="login-form">
+        <label class="field">
+          <span>访问密码</span>
+          <div class="password-field">
+            <input id="password" type="password" inputmode="numeric" autocomplete="current-password" maxlength="32" autofocus required>
+            <button id="togglePassword" class="password-toggle" type="button" aria-label="显示密码">显示</button>
+          </div>
+        </label>
+        <p id="loginError" class="login-error" role="alert" aria-live="polite"></p>
+        <button id="loginButton" class="primary-button" type="submit">进入游戏</button>
+      </form>
+    </section>
+  </main>
+
+  <script type="module">
+    import { getSafeNextPage, isUnlocked, unlock, verifyPassword } from './auth.mjs';
+
+    const form = document.getElementById('loginForm');
+    const password = document.getElementById('password');
+    const error = document.getElementById('loginError');
+    const button = document.getElementById('loginButton');
+    const toggle = document.getElementById('togglePassword');
+    const nextPage = getSafeNextPage(new URLSearchParams(location.search).get('next'));
+
+    if (isUnlocked(window.localStorage)) location.replace(nextPage);
+
+    toggle.addEventListener('click', () => {
+      const showing = password.type === 'text';
+      password.type = showing ? 'password' : 'text';
+      toggle.textContent = showing ? '显示' : '隐藏';
+      toggle.setAttribute('aria-label', showing ? '显示密码' : '隐藏密码');
+      password.focus();
+    });
+
+    password.addEventListener('input', () => { error.textContent = ''; });
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      button.disabled = true;
+      button.textContent = '验证中...';
+      try {
+        if (await verifyPassword(password.value)) {
+          unlock(window.localStorage);
+          location.replace(nextPage);
+          return;
+        }
+        error.textContent = '密码不正确，请重新输入。';
+        password.select();
+      } catch {
+        error.textContent = '当前浏览器无法完成验证，请更换浏览器后重试。';
+      }
+      button.disabled = false;
+      button.textContent = '进入游戏';
+    });
+  </script>
+</body>
+</html>

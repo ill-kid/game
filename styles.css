@@ -18,6 +18,8 @@
 
 * { box-sizing: border-box; }
 
+html.auth-pending { visibility: hidden; }
+
 html { min-width: 320px; background: var(--bg); }
 
 body {
@@ -30,6 +32,38 @@ body {
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
   min-height: 100vh;
 }
+
+.login-page { display: grid; place-items: center; padding: 20px; }
+.login-shell { width: min(420px, 100%); }
+.login-panel {
+  padding: clamp(24px, 7vw, 38px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 253, 249, .94);
+  box-shadow: var(--shadow);
+}
+.login-panel .brand-mark { margin-bottom: 24px; }
+.login-panel h1 { margin: 0; font-size: 2rem; letter-spacing: 0; }
+.login-copy { margin: 9px 0 24px; color: var(--muted); }
+.login-form { display: grid; gap: 14px; }
+.password-field { position: relative; }
+.password-field input { padding-right: 66px; }
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  min-width: 48px;
+  min-height: 34px;
+  padding: 0 8px;
+  transform: translateY(-50%);
+  color: var(--teal);
+  border: 0;
+  background: transparent;
+  font-size: .78rem;
+  font-weight: 800;
+}
+.login-error { min-height: 1.4em; margin: -2px 0 0; color: #9b4438; font-size: .8rem; }
+.login-form .primary-button { width: 100%; }
 
 button, input, select, textarea { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
@@ -315,6 +349,8 @@ button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
   .game-footer { flex-direction: column; }
   .inline-fields { grid-template-columns: 1fr; }
   .settings-heading h1 { font-size: 2rem; }
+  .settings-page .site-header { align-items: flex-start; flex-wrap: wrap; }
+  .settings-page .top-actions { width: 100%; justify-content: flex-end; }
   .player-color-grid { grid-template-columns: 1fr; }
   .settings-page .settings-actions { display: grid; grid-template-columns: 1fr 1fr; }
   .settings-page .settings-actions > * { min-width: 0; }

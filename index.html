@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>飞行棋 · 同设备双人</title>
   <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add('auth-pending');</script>
+  <script type="module">
+    import { requireAuth } from './auth.mjs';
+    requireAuth();
+  </script>
 </head>
 <body>
   <main class="app-shell" data-mode="light">
@@ -13,7 +18,7 @@
         <span class="brand-mark">棋</span>
         <div class="brand-copy"><strong>飞行棋</strong><span>同设备双人 · 轻松桌游体验</span></div>
       </div>
-      <div class="top-actions"><a class="ghost-button" href="settings.html">设置</a></div>
+      <div class="top-actions"><button class="ghost-button" type="button" data-lock-game>锁定</button><a class="ghost-button" href="settings.html">设置</a></div>
     </header>
 
     <section class="page-heading">
@@ -54,6 +59,7 @@
     import { BOARDS, DEFAULT_VERSION, getBoard } from './game-data.mjs';
     import { createInitialState } from './game-engine.mjs';
     import { loadGame, loadSettings, saveSettings, saveGame } from './storage.mjs';
+    import { bindLockButtons } from './auth.mjs';
 
     const selectedKey = new URLSearchParams(window.location.search).get('version') || DEFAULT_VERSION;
     let versionKey = BOARDS[selectedKey] ? selectedKey : DEFAULT_VERSION;
@@ -137,6 +143,7 @@
     document.getElementById('btnContinue').addEventListener('click', () => start(false));
     renderVersions();
     renderBoard();
+    bindLockButtons();
   </script>
 </body>
 </html>

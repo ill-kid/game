@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>飞行棋 · 游戏</title>
   <link rel="stylesheet" href="styles.css">
+  <script>document.documentElement.classList.add('auth-pending');</script>
+  <script type="module">
+    import { requireAuth } from './auth.mjs';
+    requireAuth();
+  </script>
 </head>
 <body>
   <main class="game-shell" data-mode="light">
@@ -15,6 +20,7 @@
         <h1 id="gameTitle">飞行棋</h1>
       </div>
       <div class="header-actions">
+        <button class="icon-button" type="button" data-lock-game>锁定</button>
         <a class="icon-button" href="settings.html" aria-label="打开设置">设置</a>
       </div>
     </header>
@@ -74,6 +80,7 @@
   <script src="float-window.js"></script>
   <script type="module">
     import { mountGamePage } from './game-ui.mjs';
+    import { bindLockButtons } from './auth.mjs';
     if (window.FlightFloat) {
       FlightFloat.init({ selector: '#floatBar', onRestore: () => {
         document.querySelector('.game-shell')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -81,6 +88,7 @@
       FlightFloat.show();
     }
     mountGamePage({ document, storage: window.localStorage });
+    bindLockButtons();
   </script>
 </body>
 </html>
